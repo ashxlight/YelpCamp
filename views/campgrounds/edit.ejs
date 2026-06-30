@@ -4,7 +4,7 @@
   <div class="row">
   <h1 class="text-center">Edit Campground</h1>
   <div class="col-6 offset-4">
-  <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="needs-validation">
+  <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="Title" class="form-label">Title</label>
         <input type="text" required class="form-control" name="campground[title]" id="Title" value="<%= campground.title %>">
@@ -16,8 +16,8 @@
       </div>
 
       <div class="mb-3">
-        <label for="image" class="form-label">Image URL</label>
-        <input type="text" required class="form-control" name="campground[image]" id="image" placeholder="Image URL" value="<%=campground.image %>">
+        <label for="image" class="form-label">Add Images</label>
+        <input type="file" name="image" id="image" multiple>
       </div>
 
       <div class="mb-3">
@@ -28,6 +28,22 @@
       <div class="mb-3">
         <label for="price" class="form-label">Price</label>
         <input type="number" required class="form-control" name="campground[price]" id="price" value="<%= campground.price %>">
+      </div>
+      <div class="mb-3">
+        <% campground.image.forEach(function(img,i) {%>
+            <img src="<%=img.thumbnail%> " class="img-thumbnail" alt="">
+            <!-- thumbnail is property used by cloudinary API see models campground.js -->
+
+            
+        <div class="form-check-inline">
+          <input type="checkbox" id="image-<%=i%>"  name="deleteImages[]" value="<%=img.filename%>">`
+           <label for="image-<%=i%>">Delete?</label>
+
+        <% }) %> 
+
+
+        </div>
+       
       </div>
 
       <button class="btn btn-primary" type="submit">Add</button>
