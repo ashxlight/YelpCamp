@@ -1,4 +1,4 @@
-if(process.nextTick.NODE_ENV!="production")
+if(process.env.NODE_ENV!="production")
 {
   require('dotenv').config();
 }
@@ -27,9 +27,15 @@ const userRoutes=require('./routes/users');
 const campgroundRoutes=require('./routes/campgrounds');
 const reviewRoutes=require('./routes/reviews');
 
-
+app.get('/',(req,res)=>{
+  res.render('home');
+});
+const dbURL=process.env.DB_URL;
   const mongoose = require('mongoose');//mongoose connection
-  mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
+  mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/yelp-camp-maptiler', {
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000
+  })
     .then(() => {
       console.log("Mongoose Connection Established");
 
@@ -50,7 +56,7 @@ app.use(MethodOverride('_method'));//in form cant use put and delete so to use t
 app.use(express.static(path.join(__dirname,'public')))//to use public directory static files
 
 const sessionConfig = {
-  secret: 'thisshouldbeabettersecret',   // 🔐 Used to sign the session ID cookie
+  secret: process.env.SESSION_SECRET || 'thisshouldbeabettersecret',   // 🔐 Used to sign the session ID cookie
   resave: false,                         // 🔁 Don't save session if nothing changed
   saveUninitialized: true,               // 💾 Save new sessions (even if empty)
   cookie: {
@@ -115,6 +121,7 @@ app.use((err,req,res,next)=>{
  
 })
 
-app.listen(3000,()=>{
-    console.log("LISTENING TO PORT 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT,()=>{
+    console.log(`LISTENING TO PORT ${PORT}`);
 })
